@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Agenda do Grupo</string>
+    <string name="title_activity_main">Agenda do Grupo</string>
+    <string name="package_name">com.crtlstudio.agendadogrupo</string>
+    <string name="custom_url_scheme">com.crtlstudio.agendadogrupo</string>
+</resources>
