@@ -1,10 +1,29 @@
+.contHeader{
+
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid rgba(10, 106, 113, 0.549);
+  padding: 10px;
+  border-radius: 0 0 35px 35px;
+  background-color: #02312e47;
+  box-shadow: 1px 1px 8px 3px rgba(102, 138, 141, 0.671);
+}
+
+.firstHeader{
+
+  font-size: 1.7rem;
+  color: #1f409c;
+
+}
+
+
 .container {
 
   background: var(--color-background-secondary, #00555526);
   border-radius: 12px;
   padding: 1rem;
-  max-width: 380px;
-  margin: 0 auto;
+  max-width: 350px;
+  margin: 20px auto;
 }
 
 .header {

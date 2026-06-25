@@ -4,7 +4,7 @@ import styles from '../ConcertCalendar/ConcertCalendar.module.css';
 import EditConcertModal from '../EditConcertModal/EditConcertModal';
 import RespostasModal from '../RespostasModal/RespostasModal';
 
-function ConcertModal({ concerto, session, isAdmin, onClose, onSaved, onUpdated }) {
+function ConcertModal({ concerto, user, isAdmin, onClose, onSaved, onUpdated }) {
   const [presenca, setPresenca] = useState({
     vou: false,
     vou_la_ter: false,
@@ -23,7 +23,7 @@ function ConcertModal({ concerto, session, isAdmin, onClose, onSaved, onUpdated 
         .from('presencas')
         .select('*')
         .eq('concerto_id', concerto.id)
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .single();
 
       if (data) {
@@ -38,7 +38,7 @@ function ConcertModal({ concerto, session, isAdmin, onClose, onSaved, onUpdated 
     }
 
     fetchPresenca();
-  }, [concerto.id, session.user.id]);
+  }, [concerto.id, user.id]);
 
   function toggle(campo) {
     setPresenca((prev) => ({ ...prev, [campo]: !prev[campo] }));
@@ -55,7 +55,7 @@ function ConcertModal({ concerto, session, isAdmin, onClose, onSaved, onUpdated 
         atualizado_em: new Date().toISOString(),
       })
       .eq('concerto_id', concerto.id)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .select();
 
     let error = updateError;
@@ -65,7 +65,7 @@ function ConcertModal({ concerto, session, isAdmin, onClose, onSaved, onUpdated 
         .from('presencas')
         .insert({
           concerto_id: concerto.id,
-          user_id: session.user.id,
+          user_id: user.id,
           ...presenca,
           atualizado_em: new Date().toISOString(),
         });

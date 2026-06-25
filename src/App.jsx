@@ -1,65 +1,31 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../src/supabase/supabaseClient';
-import Login from '../src/login/Login';
-import ConcertCalendar from '../src/components/ConcertCalendar/ConcertCalendar';
-import SetupProfile from '../src/SetupProfile/SetupProfile';
-import './App.css'
-
-async function fetchProfile(userId) {
-  const { data } = await supabase
-    .from('profiles')
-    .select('nome')
-    .eq('id', userId)
-    .single();
-
-  return data;
-}
+import AuthScreen from './components/AuthScreen/AuthScreen';
+import ConcertCalendar from './components/ConcertCalendar/ConcertCalendar';
+import './App.css';
 
 function App() {
-  const [session, setSession] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
-useEffect(() => {
-  supabase.auth.getSession().then(async ({ data: { session } }) => {
-    if (session) {
-      setSession(session);
-      const data = await fetchProfile(session.user.id);
-      setProfile(data);
-    }
-    setLoading(false);
-  });
+  useEffect(() => {
+    const saved = localStorage.getItem('agenda_user');
+    if (saved) setUser(JSON.parse(saved));
+  }, []);
 
-  const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-    setSession(session);
-    if (session) {
-      const data = await fetchProfile(session.user.id);
-      setProfile(data);
-    } else {
-      setProfile(null);
-    }
-    setLoading(false);
-  });
-
-  return () => listener.subscription.unsubscribe();
-}, []);
-
-  if (loading) return null;
-
-  if (!session) {
-    return <Login onLogin={setSession} />;
+  function handleLogin(userData) {
+    localStorage.setItem('agenda_user', JSON.stringify(userData));
+    setUser(userData);
   }
 
-  if (!profile?.nome) {
-    return (
-      <SetupProfile
-        session={session}
-        onDone={(nome) => setProfile({ nome })}
-      />
-    );
+  function handleLogout() {
+    localStorage.removeItem('agenda_user');
+    setUser(null);
   }
 
-  return <ConcertCalendar session={session} />;
+  if (!user) {
+    return <AuthScreen onLogin={handleLogin} />;
+  }
+
+  return <ConcertCalendar user={user} onLogout={handleLogout} />;
 }
 
 export default App;

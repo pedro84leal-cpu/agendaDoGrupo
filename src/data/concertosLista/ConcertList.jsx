@@ -4,7 +4,7 @@ import { supabase } from '../../supabase/supabaseClient';
 import ConcertCard from '../../components/ConcertCard/ConcertCard';
 import ConcertModal from '../../components/ConcertModal/ConcertModal';
 
-function ConcertList({ concertos, session, isAdmin, onConcertoUpdated }) {
+function ConcertList({ concertos, user, isAdmin, onConcertoUpdated }) {
   const [selecionado, setSelecionado] = useState(null);
   const [presencas, setPresencas] = useState({});
 
@@ -13,7 +13,7 @@ function ConcertList({ concertos, session, isAdmin, onConcertoUpdated }) {
       const { data } = await supabase
         .from('presencas')
         .select('*')
-        .eq('user_id', session.user.id);
+        .eq('user_id', user.id);
 
       if (data) {
         const map = {};
@@ -25,7 +25,7 @@ function ConcertList({ concertos, session, isAdmin, onConcertoUpdated }) {
     }
 
     fetchPresencas();
-  }, [session.user.id]);
+  }, [user.id]);
 
   function handleSaved(concertoId, presenca) {
     setPresencas((prev) => ({ ...prev, [concertoId]: presenca }));
@@ -52,7 +52,7 @@ function ConcertList({ concertos, session, isAdmin, onConcertoUpdated }) {
       {selecionado && (
         <ConcertModal
           concerto={selecionado}
-          session={session}
+          user={user}
           isAdmin={isAdmin}
           onClose={() => setSelecionado(null)}
           onSaved={handleSaved}

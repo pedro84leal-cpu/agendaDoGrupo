@@ -17,7 +17,7 @@ function RespostasModal({ concerto, onClose }) {
     async function fetchRespostas() {
       const { data, error } = await supabase
         .from('presencas')
-        .select('vou, vou_la_ter, nao_posso, vou_almoco_jantar, profiles(nome)')
+        .select('vou, vou_la_ter, nao_posso, vou_almoco_jantar, membros(nome)')
         .eq('concerto_id', concerto.id);
 
       if (!error) setRespostas(data);
@@ -47,7 +47,7 @@ function RespostasModal({ concerto, onClose }) {
               {grupos.map((g) => {
                 const pessoas = respostas
                   .filter((r) => r[g.campo])
-                  .map((r) => r.profiles?.nome || 'Sem nome');
+                  .map((r) => r.membros?.nome || 'Sem nome');
 
                 return (
                   <div key={g.campo} className={styles.respostaGrupo}>
