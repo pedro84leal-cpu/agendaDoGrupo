@@ -4,6 +4,33 @@ import styles from '../ConcertCalendar/ConcertCalendar.module.css';
 import EditConcertModal from '../EditConcertModal/EditConcertModal';
 import RespostasModal from '../RespostasModal/RespostasModal';
 
+function googleCalendarUrl(concerto) {
+  // Formata data e hora para o formato do Google Calendar: YYYYMMDDTHHmmss
+  const data = concerto.data.replace(/-/g, ''); // ex: 20260715
+
+  const horaInicio = concerto.hora_atuacao || concerto.hora_encontro || '120000';
+  const horaInicioFmt = horaInicio.replace(/:/g, '').slice(0, 6); // ex: 180000
+
+  // Hora de fim = hora de início + 2h (estimativa)
+  const [h, m] = horaInicio.split(':').map(Number);
+  const fimH = String((h + 2) % 24).padStart(2, '0');
+  const horaFimFmt = `${fimH}${String(m).padStart(2, '0')}00`;
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: concerto.nome,
+    dates: `${data}T${horaInicioFmt}/${data}T${horaFimFmt}`,
+    location: concerto.local || '',
+    details: [
+      concerto.hora_encontro ? `Ponto de encontro: ${concerto.hora_encontro.slice(0, 5)}` : '',
+      concerto.hora_refeicao ? `Almoço/Jantar: ${concerto.hora_refeicao.slice(0, 5)}` : '',
+      concerto.hora_atuacao ? `Atuação: ${concerto.hora_atuacao.slice(0, 5)}` : '',
+    ].filter(Boolean).join('\n'),
+  });
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 function ConcertModal({ concerto, user, isAdmin, onClose, onSaved, onUpdated }) {
   const [presenca, setPresenca] = useState({
     vou: false,
@@ -100,6 +127,21 @@ function ConcertModal({ concerto, user, isAdmin, onClose, onSaved, onUpdated }) 
             <p><strong>Atuação:</strong> {concerto.hora_atuacao.slice(0, 5)}</p>
           )}
         </div>
+
+        {/* Botão Google Calendar */}
+        <a
+          href={googleCalendarUrl(concerto)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.googleCalBtn}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" strokeWidth="2"/>
+            <path d="M3 9h18" stroke="currentColor" strokeWidth="2"/>
+            <path d="M8 2v4M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          Adicionar ao Google Calendar
+        </a>
 
         {isAdmin && (
           <div className={styles.adminBar}>
